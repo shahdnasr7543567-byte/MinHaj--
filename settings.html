@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات - منصة منهاج</title>
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#fbbf24">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="منهاج">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0a0f1e 0%, #0c1222 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 1.5rem 1rem;
+            direction: rtl;
+            text-align: right;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(rgba(251,191,36,0.06) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .container { max-width: 640px; margin: 0 auto; position: relative; z-index: 1; }
+        .page-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #fbbf24;
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+        .card {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(251, 191, 36, 0.12);
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fbbf24;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-right: 3px solid #fbbf24;
+            padding-right: 12px;
+        }
+        .setting-item { margin-bottom: 1.2rem; }
+        .setting-item label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #cbd5e1;
+        }
+        .setting-item input[type="time"],
+        .setting-item input[type="number"] {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: none;
+            border-radius: 16px;
+            color: #0a0f1e;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 0.6rem;
+            font-family: inherit;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-1px); }
+        .back-btn {
+            background: rgba(255,255,255,0.08);
+            color: #fbbf24;
+        }
+        .secondary-btn {
+            background: rgba(251,191,36,0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(251,191,36,0.4);
+        }
+        .danger-btn {
+            background: rgba(239,68,68,0.18);
+            color: #ef4444;
+            border: 1px solid rgba(239,68,68,0.4);
+        }
+        .success-msg {
+            background: rgba(76, 175, 80, 0.18);
+            border: 1px solid #4caf50;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #4caf50;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #cbd5e1;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-row strong { color: #fbbf24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="page-title"><i class="fas fa-cog"></i> الإعدادات</h2>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-clock"></i> تحديد مواعيد الأذكار والورد
+            </div>
+            <p style="margin-bottom: 1rem; color: #94a3b8; font-size: 0.9rem;">
+                ⚠️ يجب تحديد هذه المواعيد ليصلك تنبيه صوتي وإشعار في الوقت المحدد
+            </p>
+
+            <div id="successMsg" class="success-msg" style="display: none;"></div>
+
+            <div class="setting-item">
+                <label><i class="fas fa-sun"></i> موعد أذكار الصباح</label>
+                <input type="time" id="morningAzkar" step="60">
+            </div>
+
+            <div class="setting-item">
+                <label><i class="fas fa-moon"></i> موعد أذكار المساء</label>
+                <input type="time" id="eveningAzkar" step="60">
+            </div>
+
+            <div class="setting-item">
+                <label><i class="fas fa-quran"></i> موعد الورد اليومي من القرآن</label>
+                <input type="time" id="quranTime" step="60">
+            </div>
+
+            <button id="saveBtn"><i class="fas fa-save"></i> حفظ الإعدادات</button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-location-dot"></i> الموقع الجغرافي (لمواقيت الصلاة)
+            </div>
+            <div class="info-row"><span>خط العرض</span><strong id="curLat">—</strong></div>
+            <div class="info-row"><span>خط الطول</span><strong id="curLng">—</strong></div>
+            <button id="locateBtn" class="secondary-btn" style="margin-top:14px;">
+                <i class="fas fa-location-crosshairs"></i> تحديد موقعي تلقائياً
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user"></i> معلومات المستخدم
+            </div>
+            <div class="info-row"><span>اسم المستخدم</span><strong id="curUser">—</strong></div>
+            <div class="info-row"><span>تاريخ التسجيل</span><strong id="curJoined">—</strong></div>
+            <div class="info-row"><span>الأيام المتتالية</span><strong id="curStreak">0</strong></div>
+        </div>
+
+        <button id="backBtn" class="back-btn"><i class="fas fa-arrow-right"></i> العودة للرئيسية</button>
+        <button id="resetBtn" class="danger-btn" style="margin-top:10px;">
+            <i class="fas fa-rotate"></i> إعادة تعيين مهام اليوم
+        </button>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/pwa-register.js"></script>
+    <script src="js/mandatoryTasks.js"></script>
+    <script src="js/prayer.js"></script>
+    <script src="js/alerts.js"></script>
+    <script>
+        if (!checkAuth()) {}
+
+        var morningInput = document.getElementById('morningAzkar');
+        var eveningInput = document.getElementById('eveningAzkar');
+        var quranInput = document.getElementById('quranTime');
+        var successMsg = document.getElementById('successMsg');
+
+        function loadSettings() {
+            var tasks = loadMandatoryTasks();
+            var user = loadCurrentUser();
+            if (tasks.azkar[0] && tasks.azkar[0].time) {
+                morningInput.value = tasks.azkar[0].time;
+            } else if (user && user.settings.morningAzkar) {
+                morningInput.value = user.settings.morningAzkar;
+            }
+            if (tasks.azkar[1] && tasks.azkar[1].time) {
+                eveningInput.value = tasks.azkar[1].time;
+            } else if (user && user.settings.eveningAzkar) {
+                eveningInput.value = user.settings.eveningAzkar;
+            }
+            if (tasks.quran[0] && tasks.quran[0].time) {
+                quranInput.value = tasks.quran[0].time;
+            } else if (user && user.settings.quranTime) {
+                quranInput.value = user.settings.quranTime;
+            }
+
+            if (user) {
+                document.getElementById('curUser').innerText = user.name;
+                document.getElementById('curJoined').innerText = new Date(user.createdAt).toLocaleDateString('ar-EG');
+                document.getElementById('curStreak').innerText = (user.stats && user.stats.streak) || 0;
+            }
+
+            var coords = Storage.load('coordinates', null);
+            if (coords) {
+                document.getElementById('curLat').innerText = coords.latitude.toFixed(4);
+                document.getElementById('curLng').innerText = coords.longitude.toFixed(4);
+            } else {
+                document.getElementById('curLat').innerText = '30.0444 (افتراضي)';
+                document.getElementById('curLng').innerText = '31.2357 (افتراضي)';
+            }
+        }
+
+        function saveSettings() {
+            var morningTime = morningInput.value;
+            var eveningTime = eveningInput.value;
+            var quranTimeValue = quranInput.value;
+
+            // التحقق من الحقول الناقصة وإرجاع قائمة دقيقة بأسمائها
+            var missing = [];
+            if (!morningTime)    missing.push('أذكار الصباح');
+            if (!eveningTime)    missing.push('أذكار المساء');
+            if (!quranTimeValue) missing.push('الورد اليومي من القرآن');
+
+            if (missing.length > 0) {
+                MinhajModal.show({
+                    type: 'warning',
+                    title: '⚠️ مواعيد ناقصة',
+                    message: 'الرجاء تحديد المواعيد التالية قبل الحفظ:<br><strong>' + missing.join('، ') + '</strong>',
+                    confirmText: 'حسناً',
+                    autoClose: 5000
+                });
+                return;
+            }
+
+            updateMandatoryTaskTime('azkar', 'morning', morningTime);
+            updateMandatoryTaskTime('azkar', 'evening', eveningTime);
+            updateMandatoryTaskTime('quran', 'daily_wird', quranTimeValue);
+
+            var user = loadCurrentUser();
+            if (user) {
+                user.settings.morningAzkar = morningTime;
+                user.settings.eveningAzkar = eveningTime;
+                user.settings.quranTime = quranTimeValue;
+                saveCurrentUser(user);
+            }
+
+            // إرسال إشعار للنوافذ الأخرى المفتوحة (مثل لوحة التحكم) لتحديث حالة التحذير فوراً
+            // (تخزين Storage في نفس النافذة لا يُطلق حدث 'storage'، لذا نُطلقه يدوياً)
+            try {
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'minhaj_mandatoryTasks',
+                    newValue: JSON.stringify(loadMandatoryTasks())
+                }));
+            } catch (e) {}
+
+            successMsg.style.display = 'block';
+            successMsg.innerHTML = '✅ تم حفظ الإعدادات بنجاح! سيتم تذكيرك في المواعيد المحددة.';
+            setTimeout(function () { successMsg.style.display = 'none'; }, 3000);
+
+            // Modal نجاح فيه زر للعودة للوحة الرئيسية مباشرة
+            MinhajModal.show({
+                type: 'success',
+                title: '✅ تم الحفظ بنجاح',
+                message: 'حُفظت مواعيدك. سنذكّرك في الوقت المحدد.<br>' +
+                         '<small style="color:#94a3b8;">صباحاً: <strong>' + morningTime + '</strong> &nbsp; مساءً: <strong>' + eveningTime + '</strong> &nbsp; الورد: <strong>' + quranTimeValue + '</strong></small>',
+                confirmText: '🏠 العودة للرئيسية',
+                cancelText: 'البقاء هنا',
+                onConfirm: function () { window.location.href = 'main.html'; }
+            });
+        }
+
+        document.getElementById('saveBtn').addEventListener('click', saveSettings);
+        document.getElementById('backBtn').addEventListener('click', function () {
+            window.location.href = 'main.html';
+        });
+        document.getElementById('resetBtn').addEventListener('click', function () {
+            showMinhajConfirm(
+                'سيتم إعادة تعيين كل المهام (الصلوات والأذكار والورد) لليوم الحالي. هل تريد المتابعة؟',
+                function () {
+                    var t = loadMandatoryTasks();
+                    ['prayers','azkar','quran'].forEach(function (cat) {
+                        t[cat].forEach(function (item) { item.completed = false; });
+                    });
+                    t.lastResetDate = new Date().toISOString().split('T')[0];
+                    saveMandatoryTasks(t);
+                    Storage.remove('lastCompletionDate');
+                    try {
+                        window.dispatchEvent(new StorageEvent('storage', {
+                            key: 'minhaj_mandatoryTasks',
+                            newValue: JSON.stringify(t)
+                        }));
+                    } catch (e) {}
+                    showMinhajAlert('تمت إعادة تعيين مهام اليوم بنجاح.', 'success', '🔄 إعادة التعيين');
+                },
+                null,
+                'إعادة تعيين مهام اليوم'
+            );
+        });
+        document.getElementById('locateBtn').addEventListener('click', function () {
+            if (!('geolocation' in navigator)) {
+                showMinhajAlert('المتصفح لا يدعم تحديد الموقع.', 'warning', 'تنبيه');
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(function (pos) {
+                setCoordinates(pos.coords.latitude, pos.coords.longitude);
+                document.getElementById('curLat').innerText = pos.coords.latitude.toFixed(4);
+                document.getElementById('curLng').innerText = pos.coords.longitude.toFixed(4);
+                showMinhajAlert('تم تحديث موقعك بنجاح.', 'success', '📍 الموقع');
+            }, function () {
+                showMinhajAlert('تعذّر تحديد الموقع. تأكد من السماح للمتصفح بالوصول للموقع.', 'warning', 'تنبيه');
+            });
+        });
+
+        loadSettings();
+    </script>
+</body>
+</html>

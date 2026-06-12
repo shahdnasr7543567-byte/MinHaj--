@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اسأل منهاج - فتاوى وأحكام</title>
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#fbbf24">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="منهاج">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0a0f1e 0%, #0c1222 100%);
+            color: #e2e8f0; min-height: 100vh; padding: 2rem 1rem;
+            direction: rtl; text-align: right;
+        }
+        body::before {
+            content: ""; position: fixed; inset: 0;
+            background-image: radial-gradient(rgba(251,191,36,0.06) 1px, transparent 1px);
+            background-size: 40px 40px; pointer-events: none;
+        }
+        .container { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px;
+            background: rgba(251,191,36,0.12); color: #fbbf24; border-radius: 14px;
+            text-decoration: none; font-weight: 600; margin-bottom: 16px;
+            border: 1px solid rgba(251,191,36,0.3); cursor: pointer; font-family: inherit;
+        }
+        .back-btn:hover { background: rgba(251,191,36,0.2); }
+        .header { text-align: center; padding: 1rem 1rem 1.5rem; }
+        .header h1 { color: #fbbf24; font-size: 2rem; margin-bottom: 0.5rem; }
+        .header p { color: #94a3b8; }
+        .search-box {
+            position: relative; margin: 0 auto 1.5rem; max-width: 700px;
+        }
+        .search-box input {
+            width: 100%; padding: 18px 56px 18px 22px;
+            background: rgba(17,24,39,0.7); border: 1px solid rgba(251,191,36,0.25);
+            border-radius: 18px; color: white; font-size: 1.05rem; font-family: inherit;
+            outline: none; transition: 0.3s; backdrop-filter: blur(10px);
+        }
+        .search-box input:focus {
+            border-color: #fbbf24; box-shadow: 0 0 24px rgba(251,191,36,0.2);
+        }
+        .search-box i {
+            position: absolute; right: 22px; top: 50%; transform: translateY(-50%);
+            color: #fbbf24; font-size: 1.3rem;
+        }
+        .categories {
+            display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        .cat-chip {
+            padding: 8px 14px; background: rgba(17,24,39,0.6);
+            border: 1px solid rgba(251,191,36,0.2); border-radius: 14px;
+            color: #cbd5e1; cursor: pointer; font-family: inherit; font-size: 0.85rem;
+            transition: 0.25s; font-weight: 600;
+        }
+        .cat-chip:hover, .cat-chip.active {
+            background: rgba(251,191,36,0.18); color: #fbbf24;
+            border-color: rgba(251,191,36,0.5);
+        }
+        .qa-card {
+            background: rgba(17,24,39,0.7); backdrop-filter: blur(10px);
+            border: 1px solid rgba(251,191,36,0.18); border-radius: 22px;
+            padding: 1.4rem 1.5rem; margin-bottom: 1.2rem;
+            transition: 0.3s;
+        }
+        .qa-card:hover { border-color: rgba(251,191,36,0.4); transform: translateY(-2px); }
+        .qa-question {
+            font-size: 1.1rem; font-weight: 700; color: #fbbf24;
+            margin-bottom: 12px; display: flex; gap: 10px; align-items: flex-start;
+        }
+        .qa-question i { color: #fbbf24; margin-top: 4px; }
+        .qa-answer {
+            color: #cbd5e1; line-height: 1.9; padding: 14px;
+            background: rgba(0,0,0,0.2); border-radius: 14px;
+            border-right: 3px solid rgba(251,191,36,0.5);
+            font-size: 0.98rem;
+        }
+        .qa-cat {
+            display: inline-block; margin-top: 12px; padding: 4px 12px;
+            background: rgba(251,191,36,0.1); color: #fbbf24;
+            border-radius: 999px; font-size: 0.78rem;
+        }
+        .no-results {
+            text-align: center; padding: 2rem;
+            background: rgba(17,24,39,0.6); border-radius: 22px;
+            border: 1px dashed rgba(251,191,36,0.25);
+        }
+        .no-results h3 { color: #fbbf24; margin-bottom: 12px; }
+        .no-results p { color: #cbd5e1; margin-bottom: 16px; line-height: 1.8; }
+        .no-results a {
+            display: inline-block; margin: 6px;
+            padding: 10px 18px; background: rgba(251,191,36,0.15);
+            color: #fbbf24; border-radius: 12px; text-decoration: none;
+            border: 1px solid rgba(251,191,36,0.35); font-weight: 600;
+            transition: 0.2s;
+        }
+        .no-results a:hover { background: rgba(251,191,36,0.25); }
+        .disclaimer {
+            margin-top: 2rem; padding: 14px 18px;
+            background: rgba(251,191,36,0.06); border-radius: 14px;
+            border: 1px solid rgba(251,191,36,0.2);
+            color: #cbd5e1; font-size: 0.85rem; line-height: 1.7;
+            text-align: center;
+        }
+        .results-count {
+            color: #94a3b8; font-size: 0.9rem; margin: 0 0 1rem;
+            text-align: center;
+        }
+        /* ===== قائمة الاقتراحات (Autocomplete) ===== */
+        .suggestions-box {
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            left: 0;
+            background: rgba(12, 18, 34, 0.97);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(251,191,36,0.35);
+            border-radius: 16px;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+            max-height: 360px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+        .suggestions-box.show { display: block; }
+        .suggestion-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(251,191,36,0.12);
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .suggestion-item:last-child { border-bottom: 0; }
+        .suggestion-item:hover,
+        .suggestion-item.active {
+            background: rgba(251,191,36,0.12);
+        }
+        .suggestion-item .sg-icon {
+            color: #fbbf24;
+            font-size: 0.9rem;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .suggestion-item .sg-text {
+            flex: 1;
+            min-width: 0;
+        }
+        .suggestion-item .sg-question {
+            color: #fde68a;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            line-height: 1.5;
+        }
+        .suggestion-item .sg-cat {
+            color: #94a3b8;
+            font-size: 0.78rem;
+        }
+        .suggestion-item mark {
+            background: rgba(251,191,36,0.35);
+            color: #fff;
+            padding: 0 2px;
+            border-radius: 3px;
+        }
+        .suggestions-empty {
+            padding: 14px 16px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-btn" onclick="window.location.href='main.html'">
+            <i class="fas fa-arrow-right"></i> العودة للرئيسية
+        </button>
+
+        <div class="header">
+            <h1><i class="fas fa-question-circle"></i> اسأل منهاج</h1>
+            <p>اكتب سؤالك للحصول على إجابات من فتاوى موثقة</p>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="اكتب سؤالك هنا... (مثال: حكم الصلاة في السفر)" autocomplete="off" aria-autocomplete="list" aria-controls="suggestionsBox" role="combobox" aria-expanded="false">
+            <i class="fas fa-search"></i>
+            <div class="suggestions-box" id="suggestionsBox" role="listbox" aria-label="اقتراحات الأسئلة"></div>
+        </div>
+
+        <div class="categories" id="categories"></div>
+        <div class="results-count" id="resultsCount"></div>
+        <div id="qaResults"></div>
+
+        <div class="disclaimer">
+            <i class="fas fa-info-circle"></i>
+            هذه الإجابات مأخوذة من مصادر إسلامية موثوقة (إسلام ويب، فتاوى دار الإفتاء، صحيح البخاري ومسلم).
+            للمسائل الخاصة والدقيقة يُنصح بمراجعة عالم ثقة.
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/pwa-register.js"></script>
+    <script>
+        if (!checkAuth()) {}
+
+        // ====== قاعدة بيانات الأسئلة (مصادر: إسلام ويب، صحيح مسلم، صحيح البخاري) ======
+        var qaDatabase = [
+            { cat: 'الصلاة', q: 'ما حكم تارك الصلاة؟', a: 'تارك الصلاة جحوداً لوجوبها كافر بإجماع العلماء. وأما تركها كسلاً مع الإقرار بوجوبها، فهو على خلاف بين العلماء بين من يكفّره ومن يفسّقه. والاحتياط أداؤها في وقتها لقوله ﷺ: "العهد الذي بيننا وبينهم الصلاة فمن تركها فقد كفر".' },
+            { cat: 'الصلاة', q: 'كيف أصلي في السفر؟', a: 'يُسنّ للمسافر قصر الصلاة الرباعية (الظهر والعصر والعشاء) إلى ركعتين، ويجوز جمع الظهر مع العصر والمغرب مع العشاء جمع تقديم أو تأخير. ولا يقصر الفجر ولا المغرب. السفر المُبيح للقصر هو ما يُعدّ سفراً عرفاً (تقريباً ٨٠ كم فأكثر).' },
+            { cat: 'الصلاة', q: 'ما حكم الصلاة في الحذاء؟', a: 'تجوز الصلاة في الحذاء إذا كان طاهراً، لما ثبت عن النبي ﷺ أنه صلى في نعليه. لكن في زماننا حيث تُفرش المساجد بالسجاد الفاخر، الأولى خلعها احتراماً للمساجد ومنعاً للأذى.' },
+            { cat: 'الصلاة', q: 'ما حكم النوم بعد العصر؟', a: 'لم يثبت في كراهة النوم بعد العصر حديث صحيح، وما يُروى من تحذيرات فهي ضعيفة. لكن الأطباء ينصحون بتجنبه لأنه قد يُفقد النشاط ويُسبب الكسل. والأمر فيه سعة شرعاً.' },
+            { cat: 'الصيام', q: 'هل يجوز ابتلاع الريق في الصيام؟', a: 'نعم، ابتلاع الريق لا يُفطر بإجماع العلماء؛ لأنه لا يمكن التحرز منه. أما ابتلاع البلغم بعد وصوله للفم فمكروه ولا يُفطر على الراجح.' },
+            { cat: 'الصيام', q: 'هل قطرة العين تُفطر؟', a: 'الراجح من أقوال العلماء (وهو اختيار ابن باز وابن عثيمين) أن قطرة العين لا تُفطر، وإن وجد المريض طعمها في حلقه، لأن العين ليست منفذاً للجوف عرفاً.' },
+            { cat: 'الصيام', q: 'متى تُؤدى زكاة الفطر؟', a: 'تجب زكاة الفطر بغروب شمس آخر يوم من رمضان، ويُسنّ إخراجها قبل صلاة العيد. ويجوز تقديمها بيوم أو يومين. مقدارها صاع من غالب قوت البلد (تقريباً ٣ كيلو من الأرز أو القمح).' },
+            { cat: 'الصيام', q: 'ما حكم من أفطر في رمضان متعمداً؟', a: 'من أفطر يوماً في رمضان بأكل أو شرب متعمداً وجب عليه القضاء والتوبة. وإن أفطر بالجماع وجب عليه إضافة إلى ذلك كفارة مغلظة: عتق رقبة، فإن لم يستطع فصيام شهرين متتابعين، فإن لم يستطع فإطعام ستين مسكيناً.' },
+            { cat: 'الزكاة', q: 'ما نصاب الذهب والفضة؟', a: 'نصاب الذهب: ٨٥ جراماً (٢٠ مثقالاً)، ونصاب الفضة: ٥٩٥ جراماً (٢٠٠ درهم). ومن ملك ما يُساوي قيمتها من النقود لمدة عام كامل وجب عليه إخراج ٢.٥٪ زكاة.' },
+            { cat: 'الزكاة', q: 'هل في المال المدخر للزواج زكاة؟', a: 'نعم، إذا بلغ النصاب وحال عليه الحول وجبت فيه الزكاة، حتى لو كان مدخراً لغرض كالزواج أو شراء بيت؛ لأن الزكاة تتعلق بالمال نفسه لا بنيّة صاحبه.' },
+            { cat: 'العقيدة', q: 'ما هي أركان الإيمان الستة؟', a: 'أركان الإيمان: ١) الإيمان بالله. ٢) الإيمان بملائكته. ٣) الإيمان بكتبه. ٤) الإيمان برسله. ٥) الإيمان باليوم الآخر. ٦) الإيمان بالقدر خيره وشره. ودليلها حديث جبريل المشهور في الصحيحين.' },
+            { cat: 'العقيدة', q: 'ما هي أركان الإسلام الخمسة؟', a: 'أركان الإسلام: ١) شهادة أن لا إله إلا الله وأن محمداً رسول الله. ٢) إقام الصلاة. ٣) إيتاء الزكاة. ٤) صوم رمضان. ٥) حج بيت الله الحرام لمن استطاع إليه سبيلاً.' },
+            { cat: 'الأذكار', q: 'ما هي أفضل أذكار بعد الصلاة؟', a: 'بعد كل صلاة مكتوبة: استغفر الله ثلاثاً، ثم: "اللهم أنت السلام ومنك السلام تباركت يا ذا الجلال والإكرام"، ثم تسبح ٣٣، تحمد ٣٣، تكبر ٣٤، ثم تقرأ آية الكرسي والمعوذات، وقل "لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير" عشراً بعد الفجر والمغرب.' },
+            { cat: 'الأذكار', q: 'ما فضل أذكار الصباح والمساء؟', a: 'أذكار الصباح والمساء حصن المسلم من الشرور، وفيها عتق من النار وقبول للصلاة. قال ﷺ: "من قال حين يصبح وحين يمسي: سبحان الله وبحمده، مائة مرة، لم يأت أحد يوم القيامة بأفضل مما جاء به". ووقت الصباح من بعد الفجر إلى الشروق، ووقت المساء من بعد العصر إلى المغرب.' },
+            { cat: 'الأذكار', q: 'ما هو الذكر بعد كل صلاة؟', a: 'بعد كل صلاة مفروضة: ٣٣ تسبيحة + ٣٣ تحميدة + ٣٤ تكبيرة = ١٠٠. ومن قالها كاملة بعد كل صلاة غُفرت ذنوبه ولو كانت مثل زبد البحر، كما صحّ في حديث مسلم.' },
+            { cat: 'القرآن', q: 'كم مرة يُستحب ختم القرآن؟', a: 'لا يُسنّ ختم القرآن في أقل من ثلاثة أيام لقوله ﷺ: "لا يفقه من قرأ القرآن في أقل من ثلاث". والأفضل ختمه كل شهر، أو كل أسبوع كما كان يفعل بعض الصحابة. والمحافظة على ورد ثابت يومياً (ولو نصف جزء) أعظم من قراءة متفرقة.' },
+            { cat: 'القرآن', q: 'هل تجوز قراءة القرآن للحائض؟', a: 'الجمهور على المنع من المسّ والقراءة. وذهب بعض العلماء (كشيخ الإسلام ابن تيمية) إلى جواز القراءة بدون مسّ المصحف للحاجة كالتعليم والورد اليومي. والاحتياط ترك القراءة بدون حاجة.' },
+            { cat: 'الأخلاق', q: 'ما حكم الكذب الأبيض؟', a: 'الأصل أن الكذب محرم. ولكن أُجيز في ثلاث مواطن فقط كما في الحديث: ١) الإصلاح بين الناس. ٢) في الحرب (للخداع). ٣) كذب الزوج لزوجته والزوجة لزوجها فيما لا يُسقط حقاً (لإصلاح ذات البين). ما عدا ذلك فالأصل المنع.' },
+            { cat: 'الأخلاق', q: 'ما حكم بر الوالدين؟', a: 'بر الوالدين فرض عين، وعقوقهما من أكبر الكبائر. قال تعالى: "وَقَضَى رَبُّكَ أَلَّا تَعْبُدُوا إِلَّا إِيَّاهُ وَبِالْوَالِدَيْنِ إِحْسَانًا". قال ﷺ: "رضا الرب في رضا الوالد، وسخط الرب في سخط الوالد".' },
+            { cat: 'الأخلاق', q: 'ما حكم الغيبة؟', a: 'الغيبة من كبائر الذنوب، قال تعالى: "وَلَا يَغْتَبْ بَعْضُكُمْ بَعْضًا أَيُحِبُّ أَحَدُكُمْ أَنْ يَأْكُلَ لَحْمَ أَخِيهِ مَيْتًا". وعرّفها النبي ﷺ بقوله: "ذكرك أخاك بما يكره". وتوبتها: ١) الإقلاع. ٢) الندم. ٣) العزم على عدم العودة. ٤) إن علم بها استحلّ منها، وإلا دعا له واستغفر له.' },
+            { cat: 'المعاملات', q: 'ما حكم القروض البنكية بفائدة؟', a: 'القروض بفائدة محرمة وهي من الربا الصريح، قال تعالى: "وَأَحَلَّ اللَّهُ الْبَيْعَ وَحَرَّمَ الرِّبَا". والبدائل المباحة: المرابحة، الإجارة المنتهية بالتمليك، المشاركة، عبر البنوك الإسلامية.' },
+            { cat: 'المعاملات', q: 'هل بطاقات الائتمان حلال؟', a: 'إذا التزم صاحبها بالسداد قبل استحقاق الفائدة (خلال فترة السماح) فهي مباحة. أما إذا تأخر عن السداد فاستحقت عليه فوائد ربوية فهي محرمة. ويجب الحذر والتزام السداد المبكر.' },
+            { cat: 'الحج', q: 'ما هي أركان الحج؟', a: 'أركان الحج أربعة: ١) الإحرام بنية الحج. ٢) الوقوف بعرفة (يوم ٩ ذي الحجة). ٣) طواف الإفاضة. ٤) السعي بين الصفا والمروة. ومن ترك ركناً منها بطل حجّه.' },
+            { cat: 'الحج', q: 'متى يجب الحج على المسلم؟', a: 'الحج فرض على كل مسلم بالغ عاقل قادر مرة واحدة في العمر. والقدرة تشمل: الصحة البدنية، والمال (نفقة الذهاب والإياب ونفقة من يعول)، وأمن الطريق. ويجب الإسراع به متى ما توفرت الاستطاعة.' },
+            { cat: 'الطهارة', q: 'ما نواقض الوضوء؟', a: 'نواقض الوضوء: ١) ما خرج من السبيلين (بول، غائط، ريح). ٢) النوم العميق. ٣) زوال العقل (إغماء/سكر). ٤) مس الفرج بشهوة على الراجح. ٥) أكل لحم الإبل. ٦) الردة عن الإسلام.' },
+            { cat: 'الطهارة', q: 'متى يجب الغسل؟', a: 'يجب الغسل في الحالات التالية: ١) الجنابة (بإنزال أو جماع). ٢) انقطاع الحيض والنفاس. ٣) إسلام الكافر. ٤) الموت (يُغسّله غيره).' },
+            { cat: 'الأسرة', q: 'ما شروط الزواج الصحيح؟', a: 'شروط الزواج: ١) الولي (للمرأة). ٢) شاهدان عدلان مسلمان. ٣) الصيغة (إيجاب وقبول). ٤) المهر (واجب وإن لم يذكر في العقد). ٥) رضا الزوجين. وغياب أيٍّ منها يجعل العقد باطلاً عند الجمهور.' },
+            { cat: 'الأسرة', q: 'ما حقوق الزوج على زوجته؟', a: 'حقوق الزوج: الطاعة في المعروف، حفظ ماله وعرضه، حسن المعاشرة، عدم إخراج أحد إلى بيته إلا بإذنه، تربية الأولاد. وحقوق الزوجة على الزوج: المهر، النفقة (طعام، كسوة، مسكن)، حسن العشرة، العدل إن كان عنده أكثر من زوجة، تعليمها أمور دينها.' }
+        ];
+
+        var activeCategory = 'all';
+
+        function renderCategories() {
+            var cats = ['all'];
+            for (var i = 0; i < qaDatabase.length; i++) {
+                if (cats.indexOf(qaDatabase[i].cat) === -1) cats.push(qaDatabase[i].cat);
+            }
+            var html = '';
+            for (var j = 0; j < cats.length; j++) {
+                var label = cats[j] === 'all' ? 'الكل' : cats[j];
+                html += '<button class="cat-chip ' + (cats[j] === activeCategory ? 'active' : '') + '" data-cat="' + cats[j] + '">' + label + '</button>';
+            }
+            document.getElementById('categories').innerHTML = html;
+            document.querySelectorAll('.cat-chip').forEach(function (chip) {
+                chip.addEventListener('click', function () {
+                    activeCategory = chip.getAttribute('data-cat');
+                    renderCategories();
+                    doSearch();
+                });
+            });
+        }
+
+        function normalize(s) {
+            return (s || '')
+                .replace(/[\u064B-\u065F\u0670]/g, '') // إزالة التشكيل
+                .replace(/[إأآا]/g, 'ا')
+                .replace(/[ىي]/g, 'ي')
+                .replace(/[ةه]/g, 'ه')
+                .toLowerCase()
+                .trim();
+        }
+
+        function doSearch() {
+            var q = normalize(document.getElementById('searchInput').value);
+            var results = qaDatabase.filter(function (item) {
+                if (activeCategory !== 'all' && item.cat !== activeCategory) return false;
+                if (!q) return true;
+                var hay = normalize(item.q + ' ' + item.a + ' ' + item.cat);
+                // كل كلمة بحث يجب أن توجد
+                var words = q.split(/\s+/).filter(Boolean);
+                return words.every(function (w) { return hay.indexOf(w) !== -1; });
+            });
+
+            var container = document.getElementById('qaResults');
+            var countEl = document.getElementById('resultsCount');
+
+            if (results.length === 0) {
+                countEl.innerText = '';
+                container.innerHTML =
+                    '<div class="no-results">' +
+                        '<h3><i class="fas fa-search"></i> لم نجد إجابة لسؤالك</h3>' +
+                        '<p>جرّب صياغة أخرى أو راجع الإجابات في مصادر موثوقة:</p>' +
+                        '<a href="https://www.islamweb.net/ar/fatawa/" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> إسلام ويب</a>' +
+                        '<a href="https://www.dar-alifta.org/" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> دار الإفتاء المصرية</a>' +
+                        '<a href="https://binbaz.org.sa/" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> موقع ابن باز</a>' +
+                        '<a href="https://islamqa.info/ar" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> الإسلام سؤال وجواب</a>' +
+                    '</div>';
+                return;
+            }
+
+            countEl.innerText = 'عدد النتائج: ' + results.length;
+            var html = '';
+            for (var i = 0; i < results.length; i++) {
+                var r = results[i];
+                html += '<div class="qa-card">';
+                html += '<div class="qa-question"><i class="fas fa-question-circle"></i> <span>' + r.q + '</span></div>';
+                html += '<div class="qa-answer">' + r.a + '</div>';
+                html += '<span class="qa-cat">' + r.cat + '</span>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        // ===== قائمة الاقتراحات التلقائية (Autocomplete) =====
+        var suggestionsBox = document.getElementById('suggestionsBox');
+        var searchInputEl = document.getElementById('searchInput');
+        var activeSuggestionIndex = -1;
+        var currentSuggestions = [];
+
+        function highlightMatch(text, query) {
+            if (!query) return escapeForHTML(text);
+            var nText = normalize(text);
+            var nQuery = normalize(query);
+            var idx = nText.indexOf(nQuery);
+            if (idx === -1) return escapeForHTML(text);
+            // نحن نطابق على نسخة مُطبَّعة لكن نُبرز على النص الأصلي بنفس الطول التقريبي
+            // لأن normalize قد يُغيّر الطول قليلاً، نستخدم تعبيراً عادياً مع تجاهل التشكيل
+            var pattern = nQuery.split('').map(function (ch) { return ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('[\\u064B-\\u065F\\u0670]*');
+            var re = new RegExp(pattern, 'gi');
+            return escapeForHTML(text).replace(re, function (m) { return '<mark>' + m + '</mark>'; });
+        }
+
+        function escapeForHTML(s) {
+            return String(s).replace(/[&<>"']/g, function (c) {
+                return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+            });
+        }
+
+        function buildSuggestions(rawQuery) {
+            var q = normalize(rawQuery);
+            if (!q || q.length < 2) return [];
+            var matches = [];
+            for (var i = 0; i < qaDatabase.length; i++) {
+                var item = qaDatabase[i];
+                if (activeCategory !== 'all' && item.cat !== activeCategory) continue;
+                var nq = normalize(item.q);
+                var nc = normalize(item.cat);
+                var score = 0;
+                if (nq.indexOf(q) === 0) score = 100;
+                else if (nq.indexOf(q) !== -1) score = 50;
+                else if (nc.indexOf(q) !== -1) score = 20;
+                else {
+                    // مطابقة كل كلمة على حدة في السؤال أو التصنيف
+                    var words = q.split(/\s+/).filter(Boolean);
+                    var hits = 0;
+                    for (var w = 0; w < words.length; w++) {
+                        if (nq.indexOf(words[w]) !== -1 || nc.indexOf(words[w]) !== -1) hits++;
+                    }
+                    if (hits === words.length && hits > 0) score = 10;
+                }
+                if (score > 0) matches.push({ item: item, score: score });
+            }
+            matches.sort(function (a, b) { return b.score - a.score; });
+            return matches.slice(0, 8).map(function (m) { return m.item; });
+        }
+
+        function renderSuggestions(rawQuery) {
+            currentSuggestions = buildSuggestions(rawQuery);
+            activeSuggestionIndex = -1;
+            if (currentSuggestions.length === 0) {
+                if (rawQuery && rawQuery.trim().length >= 2) {
+                    suggestionsBox.innerHTML = '<div class="suggestions-empty">لا توجد اقتراحات — اضغط Enter للبحث الكامل.</div>';
+                    suggestionsBox.classList.add('show');
+                    searchInputEl.setAttribute('aria-expanded', 'true');
+                } else {
+                    hideSuggestions();
+                }
+                return;
+            }
+            var html = '';
+            for (var i = 0; i < currentSuggestions.length; i++) {
+                var s = currentSuggestions[i];
+                html += '<div class="suggestion-item" role="option" data-idx="' + i + '">';
+                html += '<i class="fas fa-circle-question sg-icon"></i>';
+                html += '<div class="sg-text">';
+                html += '<div class="sg-question">' + highlightMatch(s.q, rawQuery) + '</div>';
+                html += '<div class="sg-cat"><i class="fas fa-tag"></i> ' + escapeForHTML(s.cat) + '</div>';
+                html += '</div></div>';
+            }
+            suggestionsBox.innerHTML = html;
+            suggestionsBox.classList.add('show');
+            searchInputEl.setAttribute('aria-expanded', 'true');
+
+            suggestionsBox.querySelectorAll('.suggestion-item').forEach(function (el) {
+                el.addEventListener('mousedown', function (e) {
+                    e.preventDefault(); // لا تفقد التركيز قبل الالتقاط
+                    var idx = parseInt(el.getAttribute('data-idx'), 10);
+                    pickSuggestion(idx);
+                });
+            });
+        }
+
+        function hideSuggestions() {
+            suggestionsBox.classList.remove('show');
+            suggestionsBox.innerHTML = '';
+            searchInputEl.setAttribute('aria-expanded', 'false');
+            activeSuggestionIndex = -1;
+        }
+
+        function pickSuggestion(idx) {
+            if (idx < 0 || idx >= currentSuggestions.length) return;
+            var picked = currentSuggestions[idx];
+            searchInputEl.value = picked.q;
+            hideSuggestions();
+            doSearch();
+            // مرّر إلى أول نتيجة (المختارة)
+            setTimeout(function () {
+                var firstCard = document.querySelector('.qa-card');
+                if (firstCard && firstCard.scrollIntoView) {
+                    firstCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 60);
+        }
+
+        function setActiveSuggestion(newIdx) {
+            var items = suggestionsBox.querySelectorAll('.suggestion-item');
+            if (items.length === 0) return;
+            if (newIdx < 0) newIdx = items.length - 1;
+            if (newIdx >= items.length) newIdx = 0;
+            activeSuggestionIndex = newIdx;
+            items.forEach(function (el, i) {
+                if (i === newIdx) {
+                    el.classList.add('active');
+                    if (el.scrollIntoView) el.scrollIntoView({ block: 'nearest' });
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+        }
+
+        var searchTimer = null;
+        searchInputEl.addEventListener('input', function () {
+            clearTimeout(searchTimer);
+            var val = this.value;
+            // اقتراحات فورية + بحث مؤجل
+            renderSuggestions(val);
+            searchTimer = setTimeout(doSearch, 200);
+        });
+
+        searchInputEl.addEventListener('keydown', function (e) {
+            var visible = suggestionsBox.classList.contains('show');
+            if (!visible || currentSuggestions.length === 0) {
+                if (e.key === 'Enter') { hideSuggestions(); doSearch(); }
+                return;
+            }
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                setActiveSuggestion(activeSuggestionIndex + 1);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                setActiveSuggestion(activeSuggestionIndex - 1);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (activeSuggestionIndex >= 0) {
+                    pickSuggestion(activeSuggestionIndex);
+                } else {
+                    hideSuggestions();
+                    doSearch();
+                }
+            } else if (e.key === 'Escape') {
+                hideSuggestions();
+            }
+        });
+
+        searchInputEl.addEventListener('focus', function () {
+            if (this.value && this.value.trim().length >= 2) renderSuggestions(this.value);
+        });
+
+        // إخفاء عند النقر خارجاً
+        document.addEventListener('click', function (e) {
+            if (!suggestionsBox.contains(e.target) && e.target !== searchInputEl) {
+                hideSuggestions();
+            }
+        });
+
+        renderCategories();
+        doSearch();
+    </script>
+</body>
+</html>

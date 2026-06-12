@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأصدقاء - منصة منهاج</title>
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#fbbf24">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="منهاج">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0a0f1e 0%, #0c1222 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 1.5rem 1rem;
+            direction: rtl;
+            text-align: right;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(rgba(251,191,36,0.06) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .container { max-width: 800px; margin: 0 auto; position: relative; z-index: 1; }
+        .page-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #fbbf24;
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+        .card {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(251, 191, 36, 0.12);
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fbbf24;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-right: 3px solid #fbbf24;
+            padding-right: 12px;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .input-group input {
+            flex: 1;
+            min-width: 180px;
+            padding: 12px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+        }
+        button {
+            padding: 12px 18px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: none;
+            border-radius: 12px;
+            color: #0a0f1e;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-2px); }
+        .back-btn {
+            background: rgba(255,255,255,0.08);
+            color: #fbbf24;
+            margin-top: 1rem;
+            width: 100%;
+        }
+        .friend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .friend-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e2e8f0;
+        }
+        .friend-status {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .status-good { background: rgba(76, 175, 80, 0.18); color: #4caf50; }
+        .status-bad { background: rgba(239, 68, 68, 0.18); color: #ef4444; }
+        .remove-friend {
+            background: rgba(239, 68, 68, 0.18);
+            color: #ef4444;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .notification-item {
+            padding: 12px;
+            background: rgba(251,191,36,0.08);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border-right: 3px solid #fbbf24;
+            color: #cbd5e1;
+        }
+        .notification-item .date {
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="page-title"><i class="fas fa-user-friends"></i> الأصدقاء والإشعارات</h2>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user-plus"></i> إضافة صديق جديد
+            </div>
+            <div class="input-group">
+                <input type="text" id="friendName" placeholder="أدخل اسم الصديق">
+                <button id="addFriendBtn"><i class="fas fa-plus"></i> إضافة</button>
+            </div>
+            <p style="color:#94a3b8;font-size:0.85rem;">
+                💡 شارك أسماء الأصدقاء ليتشجعوا معك على الالتزام
+            </p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-users"></i> قائمة أصدقائي
+            </div>
+            <div id="friendsList"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-bell"></i> الإشعارات
+            </div>
+            <div id="notificationsList"></div>
+        </div>
+
+        <button id="backBtn" class="back-btn"><i class="fas fa-arrow-right"></i> العودة للرئيسية</button>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/pwa-register.js"></script>
+    <script src="js/friends.js"></script>
+    <script>
+        if (!checkAuth()) {}
+
+        function loadFriendsPage() {
+            loadFriendsList();
+            loadNotifications();
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, function (m) {
+                return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m];
+            });
+        }
+
+        function loadFriendsList() {
+            var friends = getFriendsList();
+            var container = document.getElementById('friendsList');
+            if (friends.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:#64748b;padding:18px;">📭 لا يوجد أصدقاء بعد<br>أضف أصدقاء لتتبع تقدمهم</p>';
+                return;
+            }
+            var html = '';
+            for (var i = 0; i < friends.length; i++) {
+                var friend = friends[i];
+                var progress = getFriendProgress(friend.name);
+                var statusClass = progress.percentage >= 70 ? 'status-good' : 'status-bad';
+                var statusText = progress.percentage >= 70 ? 'ملتزم 💪' : 'يحتاج تشجيع 🤝';
+                html += '<div class="friend-item">';
+                html += '<div class="friend-name"><i class="fas fa-user-circle"></i><span>' + escapeHtml(friend.name) + '</span></div>';
+                html += '<div class="friend-status ' + statusClass + '">' + statusText + ' (' + progress.percentage + '%)</div>';
+                html += '<button class="remove-friend" data-name="' + escapeHtml(friend.name) + '"><i class="fas fa-trash"></i></button>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
+            container.querySelectorAll('.remove-friend').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var name = btn.getAttribute('data-name');
+                    var doRemove = function () { removeFriend(name); loadFriendsPage(); };
+                    if (typeof showMinhajConfirm === 'function') {
+                        showMinhajConfirm('هل أنت متأكد من حذف ' + name + ' من قائمة الأصدقاء؟', doRemove, null, 'حذف صديق');
+                    } else {
+                        doRemove();
+                    }
+                });
+            });
+        }
+
+        function loadNotifications() {
+            var notifications = getNotifications();
+            var container = document.getElementById('notificationsList');
+            if (notifications.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:#64748b;padding:18px;">📭 لا توجد إشعارات جديدة</p>';
+                return;
+            }
+            var html = '';
+            for (var i = 0; i < notifications.length; i++) {
+                var notif = notifications[i];
+                html += '<div class="notification-item">';
+                html += '<i class="fas fa-bell"></i> ' + escapeHtml(notif.message);
+                html += '<div class="date">' + notif.date + '</div>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        document.getElementById('addFriendBtn').addEventListener('click', function () {
+            var name = document.getElementById('friendName').value.trim();
+            if (name === '') {
+                if (typeof showMinhajAlert === 'function') {
+                    showMinhajAlert('الرجاء إدخال اسم الصديق.', 'warning', 'تنبيه');
+                }
+                return;
+            }
+            if (addFriend(name)) {
+                document.getElementById('friendName').value = '';
+                loadFriendsPage();
+                if (typeof showMinhajAlert === 'function') {
+                    showMinhajAlert('تمت إضافة ' + name + ' إلى قائمة أصدقائك.', 'success', 'تمت الإضافة');
+                }
+            }
+        });
+        document.getElementById('friendName').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') document.getElementById('addFriendBtn').click();
+        });
+        document.getElementById('backBtn').addEventListener('click', function () {
+            window.location.href = 'main.html';
+        });
+
+        loadFriendsPage();
+    </script>
+</body>
+</html>

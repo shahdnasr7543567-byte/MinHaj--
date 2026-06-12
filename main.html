@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>منصة منهاج | اللوحة الرئيسية</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <meta name="theme-color" content="#fbbf24">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="منهاج">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="القائمة">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <aside class="sidebar" id="sidebar">
+    <div class="brand-container">
+        <img src="logo.png" alt="منهاج" class="main-logo-img">
+        <div class="logo">مِـنْـهَـاج</div>
+    </div>
+    <nav>
+        <ul class="nav-links">
+            <li class="active" data-page="dashboard"><i class="fas fa-home"></i> <span>الرئيسية</span></li>
+
+            <li data-page="tasks"><i class="fas fa-tasks"></i> <span>المهام الاختيارية</span></li>
+            <li data-page="azkar"><i class="fas fa-praying-hands"></i> <span>أذكار الصباح والمساء</span></li>
+            <li data-page="ask"><i class="fas fa-question-circle"></i> <span>اسأل منهاج</span></li>
+            <li data-page="settings"><i class="fas fa-cog"></i> <span>الإعدادات</span></li>
+            <li data-page="friends"><i class="fas fa-users"></i> <span>الأصدقاء</span></li>
+            <li data-page="focus"><i class="fas fa-bullseye"></i> <span>وضع التركيز</span></li>
+            <li id="logoutBtn"><i class="fas fa-sign-out-alt"></i> <span>تسجيل الخروج</span></li>
+        </ul>
+    </nav>
+</aside>
+
+    <main class="main-content">
+        <header class="glass-header">
+            <div class="user-info">
+                <h1 id="welcome-msg">أهلاً بك</h1>
+                <p>حافظ على صلاتك، تنضبط حياتك</p>
+            </div>
+            <div class="date-info">
+                <div id="clock">--:--:--</div>
+                <div class="gregorian-date" id="gregorian-date"></div>
+                <div class="hijri-date" id="hijri-date"></div>
+            </div>
+        </header>
+
+        <div id="times-warning"></div>
+
+        <div class="accordion-controls">
+            <button id="expandAllBtn" class="acc-control-btn"><i class="fas fa-chevron-down"></i> فتح الكل</button>
+            <button id="collapseAllBtn" class="acc-control-btn"><i class="fas fa-chevron-up"></i> إغلاق الكل</button>
+        </div>
+        <!-- نضع التايمر هنا ليكون بارزاً ومستقلاً عن بطاقات المهام -->
+<div id="focusTimerContainer" style="display:none; text-align:center; padding: 25px; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 20px; margin: 0 20px 25px 20px; backdrop-filter: blur(10px);">
+    <div style="font-size: 0.9rem; color: #fbbf24; margin-bottom: 10px; font-weight: bold;">
+        <i class="fas fa-bullseye"></i> وضع التركيز نشط حالياً
+    </div>
+    <h3 id="focusTimerDisplay" style="font-size: 3.5rem; color: #fff; font-family: 'monospace'; margin: 0; text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);">00:00</h3>
+    <p style="color: #cbd5e1; margin-top: 8px; font-size: 0.95rem;">"سوف نبقى هنا كي يزول الألم".. استمر يا بطل</p>
+</div>
+
+
+
+        <div class="dashboard-grid">
+            <section class="card accordion collapsed" data-acc="prayers">
+    <div class="card-header acc-toggle">
+        <i class="fas fa-mosque"></i> <span>مواقيت الصلاة</span> 
+        <i class="fas fa-chevron-down acc-chevron"></i>
+    </div>
+    <div class="card-body">
+        <!-- قائمة المواقيت التي تظهر برمجياً -->
+        <div id="prayerTimesList"></div>
+
+        <!-- الجزء الجديد لطلب الدكتور -->
+        <div class="pre-adhan-setting" style="margin: 15px 0; padding: 12px; background: rgba(251, 191, 36, 0.08); border-radius: 12px; border: 1px dashed rgba(251, 191, 36, 0.3);">
+            <label style="display: block; color: #fde68a; font-size: 0.9rem; margin-bottom: 8px; font-weight: 600;">
+                <i class="fas fa-clock"></i> تنبيه قبل الأذان بـ:
+            </label>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="number" id="preAdhanMinutes" value="15" min="1" max="60" 
+                       style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid #fbbf24; border-radius: 8px; color: #fff; text-align: center;">
+                <span style="color: #cbd5e1; font-size: 0.85rem;">دقيقة</span>
+                <button id="savePreAdhanBtn" type="button"
+                        style="background: #fbbf24; color: #0a0f1e; border: 0; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem;">
+                    حفظ
+                </button>
+            </div>
+        </div>
+
+        <!-- زر تحديد الموقع الأصلي -->
+        <button id="locateBtn" class="action-btn" style="margin-top:12px;">
+            <i class="fas fa-location-crosshairs"></i> تحديد موقعي لدقة المواقيت
+        </button>
+    </div>
+</section>
+
+            <section class="card accordion collapsed" data-acc="mandatory">
+                <div class="card-header acc-toggle"><i class="fas fa-clipboard-check"></i> <span>المهام الإجبارية</span> <i class="fas fa-chevron-down acc-chevron"></i></div>
+                <div class="card-body">
+                    <div class="progress-section">
+                        <div class="progress-label"><span>📌 تقدم المهام</span><span id="mandatory-percent">0%</span></div>
+                        <div class="progress-bar-container"><div class="progress-bar-fill" id="mandatory-progress-bar"></div></div>
+                        <div class="progress-label"><span id="mandatory-stats">0/0</span><span>⭐ نقاط: <span id="mandatory-points">0</span></span></div>
+                    </div>
+                    <div id="mandatoryTasksContainer"></div>
+                </div>
+            </section>
+
+            <section class="card accordion collapsed" data-acc="optional">
+                <div class="card-header acc-toggle"><i class="fas fa-list"></i> <span>المهام الاختيارية</span> <i class="fas fa-chevron-down acc-chevron"></i></div>
+                <div class="card-body">
+                    <div class="progress-section">
+                        <div class="progress-label"><span>✨ تقدم المهام</span><span id="optional-percent">0%</span></div>
+                        <div class="progress-bar-container"><div class="progress-bar-fill" id="optional-progress-bar"></div></div>
+                        <div class="progress-label"><span id="optional-stats">0/0</span></div>
+                    </div>
+                    <div id="optionalTasksContainer"></div>
+                    <button id="goToTasksBtn" class="action-btn">➕ إضافة مهام اختيارية</button>
+                </div>
+            </section>
+
+            <section class="card stats-wide accordion collapsed" data-acc="stats">
+                <div class="card-header acc-toggle"><i class="fas fa-chart-line"></i> <span>إحصائيات الإنجاز</span> <i class="fas fa-chevron-down acc-chevron"></i></div>
+                <div class="card-body">
+                    <div class="stats-tabs">
+                        <button class="tab-btn active" data-period="daily">📅 يومي</button>
+                        <button class="tab-btn" data-period="weekly">📆 أسبوعي</button>
+                        <button class="tab-btn" data-period="monthly">📊 شهري</button>
+                        <button class="tab-btn" data-period="yearly">🗓 سنوي</button>
+                    </div>
+                    <div class="progress-section">
+                        <div class="progress-label"><span>🎯 نسبة الإنجاز الإجمالية</span><span id="total-percent">0%</span></div>
+                        <div class="progress-bar-container"><div class="progress-bar-fill" id="total-progress-bar"></div></div>
+                    </div>
+                    <div id="encouragement-message"></div>
+                    <div class="chart-wrap">
+                        <canvas id="prayerChart"></canvas>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-value" id="streakValue">0</div>
+                            <div class="stat-label">🔥 أيام متتالية</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="pointsValue">0</div>
+                            <div class="stat-label">⭐ النقاط اليوم</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="motivationText" style="font-size:0.95rem;line-height:1.5;">—</div>
+                            <div class="stat-label">💬 رسالتك</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="marquee-footer">
+                <div class="marquee-text"><span id="quran-stream"></span></div>
+            </footer>
+        </div>
+    </main>
+
+    <script src="js/adhan.umd.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/messages.js"></script>
+    <script src="js/mandatoryTasks.js"></script>
+    <script src="js/friends.js"></script>
+    <script src="js/prayer.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/extensionBridge.js"></script>
+    <script src="js/pwa-register.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+function savePreAdhanSetting() {
+    const inputField = document.getElementById('preAdhanMinutes');
+    if (!inputField) return;
+
+    const parsed = parseInt(inputField.value, 10);
+    const mins = Number.isFinite(parsed) ? Math.min(60, Math.max(1, parsed)) : 15;
+    inputField.value = mins;
+    localStorage.setItem('minhaj_pre_adhan_mins', String(mins));
+
+    if (typeof showMinhajAlert === 'function') {
+        showMinhajAlert('تم تحديث وقت التنبيه ليكون قبل الأذان بـ ' + mins + ' دقيقة.', 'success', 'تم الحفظ');
+    } else if (typeof MinhajModal !== 'undefined' && typeof MinhajModal.show === 'function') {
+        MinhajModal.show({
+            type: 'success',
+            title: 'تم الحفظ',
+            message: 'تم تحديث وقت التنبيه ليكون قبل الأذان بـ ' + mins + ' دقيقة.',
+            confirmText: 'حسناً',
+            autoClose: 4500
+        });
+    } else {
+        console.log('تم حفظ إعداد التنبيه قبل الأذان:', mins, 'دقيقة');
+    }
+}
+window.savePreAdhanSetting = savePreAdhanSetting;
+
+// استرجاع القيمة المحفوظة عند فتح الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    const savedMins = parseInt(localStorage.getItem('minhaj_pre_adhan_mins'), 10);
+    const inputField = document.getElementById('preAdhanMinutes');
+    const saveBtn = document.getElementById('savePreAdhanBtn');
+    const normalized = Number.isFinite(savedMins) ? Math.min(60, Math.max(1, savedMins)) : 15;
+
+    if (inputField) {
+        inputField.value = normalized;
+        inputField.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                savePreAdhanSetting();
+            }
+        });
+    }
+    if (saveBtn) {
+        saveBtn.addEventListener('click', savePreAdhanSetting);
+    }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - منصة منهاج</title>
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#fbbf24">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="منهاج">
+    <link rel="apple-touch-icon" href="logo.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0a0f1e 0%, #0c1222 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 1rem;
+            direction: rtl;
+            text-align: right;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(rgba(251, 191, 36, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+        .login-container {
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 32px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            position: relative;
+            z-index: 1;
+        }
+        .logo {
+            width: 85px;
+            height: 85px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(251,191,36,0.25);
+        }
+        .logo img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
+        h1 {
+            color: #fbbf24;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+        .subtitle { color: #94a3b8; margin-bottom: 2rem; }
+        .input-group { margin-bottom: 1.5rem; text-align: right; }
+        .input-group label {
+            display: block;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 16px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+        .input-group input:focus {
+            border-color: #fbbf24;
+            box-shadow: 0 0 10px rgba(251,191,36,0.2);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: none;
+            border-radius: 16px;
+            color: #0a0f1e;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+        button:hover { transform: translateY(-2px); }
+        .error { color: #ef4444; margin-top: 1rem; font-size: 0.9rem; min-height: 1.2em; }
+        .quote {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        @media (max-width: 480px) {
+            .login-container { padding: 1.75rem; }
+            h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="logo.png" alt="منهاج">
+        </div>
+        <h1>مِـنْـهَـاج</h1>
+        <p class="subtitle">منصتك لتنظيم العبادات والمهام</p>
+
+        <div class="input-group">
+            <label for="username"><i class="fas fa-user"></i> اسم المستخدم</label>
+            <input type="text" id="username" placeholder="أدخل اسمك..." autocomplete="off">
+        </div>
+
+        <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> دخول</button>
+
+        <div id="errorMsg" class="error"></div>
+
+        <div class="quote">
+            <i class="fas fa-quote-right"></i> حافظ على صلاتك، تنضبط حياتك
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/pwa-register.js"></script>
+    <script>
+        // إذا كان مسجل دخول، انتقل مباشرة للوحة الرئيسية
+        if (Storage.load('currentUser', null)) {
+            window.location.href = 'main.html';
+        }
+
+        var loginBtn = document.getElementById('loginBtn');
+        var usernameInput = document.getElementById('username');
+        var errorDiv = document.getElementById('errorMsg');
+
+        function doLogin() {
+            var username = usernameInput.value.trim();
+            errorDiv.innerText = '';
+
+            if (username === '') {
+                errorDiv.innerText = '❌ الرجاء إدخال اسم المستخدم';
+                return;
+            }
+
+            var result = login(username);
+            if (result.success) {
+                window.location.href = 'main.html';
+            } else {
+                errorDiv.innerText = '❌ ' + result.message;
+            }
+        }
+
+        loginBtn.addEventListener('click', doLogin);
+        usernameInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') doLogin();
+        });
+
+        // طلب إذن الإشعارات مبكراً
+        if ('Notification' in window && Notification.permission === 'default') {
+            try { Notification.requestPermission(); } catch (e) {}
+        }
+    </script>
+</body>
+</html>

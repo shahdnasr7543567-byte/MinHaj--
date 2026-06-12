@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>منصة منهاج</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <meta name="theme-color" content="#fbbf24">
+    <link rel="manifest" href="manifest.webmanifest">
+    <script>
+        // إذا كان المستخدم مسجّل دخول → اللوحة الرئيسية
+        // وإلا → صفحة تسجيل الدخول
+        var u = null;
+        try { u = JSON.parse(localStorage.getItem('minhaj_currentUser') || 'null'); } catch (e) {}
+        window.location.replace(u ? 'main.html' : 'login.html');
+    </script>
+    <meta http-equiv="refresh" content="0; url=login.html">
+</head>
+<body>
+    <p style="font-family:'Cairo',sans-serif;text-align:center;padding:40px;color:#fbbf24;">
+        جارٍ التحويل... <a href="login.html" style="color:#fbbf24;">اضغط هنا إذا لم يحدث ذلك تلقائياً</a>
+    </p>
+</body>
+</html>

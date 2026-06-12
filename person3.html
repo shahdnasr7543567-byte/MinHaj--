@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المهام الاختيارية - منهاج</title>
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#fbbf24">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="منهاج">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0a0f1e 0%, #0c1222 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            padding: 1.5rem 1rem;
+            direction: rtl;
+            text-align: right;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(rgba(251,191,36,0.06) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .container { max-width: 640px; width: 100%; position: relative; z-index: 1; }
+        .page-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #fbbf24;
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+        .card {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(251, 191, 36, 0.12);
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fbbf24;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-right: 3px solid #fbbf24;
+            padding-right: 12px;
+        }
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 130px auto;
+            gap: 10px;
+        }
+        .input-grid input {
+            padding: 12px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            font-family: inherit;
+        }
+        .input-grid input:focus { border-color: #fbbf24; }
+        button {
+            padding: 12px 18px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: none;
+            border-radius: 12px;
+            color: #0a0f1e;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+        button:hover { transform: translateY(-2px); }
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            opacity: 0.55;
+        }
+        .task-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+        .task-text { word-break: break-word; }
+        .task-time-tag {
+            background: rgba(251,191,36,0.12);
+            color: #fbbf24;
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+        .task-check {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #fbbf24;
+            border-radius: 6px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .task-check.checked { background: #fbbf24; position: relative; }
+        .task-check.checked::after {
+            content: "✓";
+            color: #000;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            line-height: 1.2;
+        }
+        .del-btn {
+            background: rgba(239,68,68,0.18);
+            color: #ef4444;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.08);
+            color: #fbbf24;
+            width: 100%;
+            margin-top: 0;
+        }
+        .focus-banner {
+            background: linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.1));
+            border: 1px solid rgba(251,191,36,0.35);
+            border-radius: 18px;
+            padding: 14px 18px;
+            text-align: center;
+            color: #fbbf24;
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+        @media (max-width: 520px) {
+            .input-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="page-title"><i class="fas fa-list-check"></i> المهام الاختيارية</h2>
+
+        <div id="focusBanner" class="focus-banner" style="display:none;"></div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-plus-circle"></i> إضافة مهمة جديدة
+            </div>
+            <div class="input-grid">
+                <input type="text" id="taskInput" placeholder="أدخل اسم المهمة...">
+                <input type="time" id="taskTime" title="وقت تنبيه اختياري">
+                <button id="addBtn"><i class="fas fa-plus"></i> أضف</button>
+            </div>
+            <div style="margin-top:10px;color:#94a3b8;font-size:0.85rem;">
+                💡 يمكنك تحديد وقت لتذكير صوتي عند موعد المهمة
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-tasks"></i> قائمة المهام الاختيارية
+            </div>
+            <div id="tasksContainer"></div>
+        </div>
+
+        <button id="focusBtn" class="back-btn" style="margin-bottom:10px;background:linear-gradient(135deg, #fbbf24, #f59e0b);color:#0a0f1e;">
+            <i class="fas fa-bullseye"></i> تشغيل/إيقاف وضع التركيز
+        </button>
+        <button id="backBtn" class="back-btn"><i class="fas fa-arrow-right"></i> العودة للرئيسية</button>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/extensionBridge.js"></script>
+    <script src="js/pwa-register.js"></script>
+    <script>
+        if (!checkAuth()) {} // التحقق
+
+        var tasks = [];
+
+        function loadTasks() {
+            tasks = Storage.load('myOptionalTasks', []);
+            // التوافق مع البيانات القديمة المخزنة بدون 'minhaj_'
+            try {
+                var legacy = localStorage.getItem('myOptionalTasks');
+                if (legacy && tasks.length === 0) {
+                    var parsed = JSON.parse(legacy);
+                    if (Array.isArray(parsed) && parsed.length) {
+                        tasks = parsed;
+                        Storage.save('myOptionalTasks', tasks);
+                    }
+                }
+            } catch (e) {}
+            renderTasks();
+        }
+
+        function saveTasks() {
+            Storage.save('myOptionalTasks', tasks);
+            // إصدار حدث للوحة الرئيسية في تبويب آخر
+            try { window.dispatchEvent(new StorageEvent('storage', { key: 'minhaj_myOptionalTasks' })); } catch (e) {}
+        }
+
+        function triggerFocusMode(state, minutes) {
+            Storage.save('focusMode', state);
+            if (state && minutes) {
+                Storage.save('focusEndTime', Date.now() + minutes * 60000);
+                Storage.save('focusDuration', minutes);
+                if (typeof MinhajExtension !== 'undefined') MinhajExtension.startFocus(minutes);
+            } else if (!state) {
+                Storage.remove('focusEndTime');
+                if (typeof MinhajExtension !== 'undefined') MinhajExtension.stopFocus();
+            }
+            updateFocusBanner();
+        }
+
+        function updateFocusBanner() {
+            var banner = document.getElementById('focusBanner');
+            var on = Storage.load('focusMode', false);
+            var endTime = Storage.load('focusEndTime', null);
+            if (on && endTime && endTime > Date.now()) {
+                var remaining = Math.ceil((endTime - Date.now()) / 60000);
+                banner.style.display = 'block';
+                banner.innerHTML = '🎯 وضع التركيز مفعل — يتبقى ' + remaining + ' دقيقة';
+            } else {
+                if (on) Storage.save('focusMode', false);
+                Storage.remove('focusEndTime');
+                banner.style.display = 'none';
+            }
+        }
+
+        function addNewTask() {
+            var input = document.getElementById('taskInput');
+            var timeInput = document.getElementById('taskTime');
+            var text = input.value.trim();
+            if (text === '') return;
+            tasks.push({
+                id: Date.now(),
+                text: text,
+                time: timeInput.value || null,
+                completed: false
+            });
+            saveTasks();
+            renderTasks();
+            input.value = '';
+            timeInput.value = '';
+            input.focus();
+        }
+
+        function toggleTask(id) {
+            for (var i = 0; i < tasks.length; i++) {
+                if (tasks[i].id === id) {
+                    tasks[i].completed = !tasks[i].completed;
+                    if (tasks[i].completed) {
+                        triggerFocusMode(false, 0);
+                    } else {
+                        triggerFocusMode(true, 30);
+                    }
+                    break;
+                }
+            }
+            saveTasks();
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(function (t) { return t.id !== id; });
+            saveTasks();
+            renderTasks();
+        }
+
+        function renderTasks() {
+            var container = document.getElementById('tasksContainer');
+            if (!container) return;
+            if (tasks.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:24px;color:#64748b;">📭 لا توجد مهام حالياً<br>أضف مهامك الاختيارية لتتبعها</div>';
+                return;
+            }
+            var html = '';
+            for (var i = 0; i < tasks.length; i++) {
+                var task = tasks[i];
+                html += '<div class="task-item ' + (task.completed ? 'completed' : '') + '">';
+                html += '<div class="task-left">';
+                html += '<div class="task-check ' + (task.completed ? 'checked' : '') + '" data-action="toggle" data-id="' + task.id + '"></div>';
+                html += '<span class="task-text">' + escapeHtml(task.text) + '</span>';
+                html += '</div>';
+                if (task.time) html += '<span class="task-time-tag">🕐 ' + task.time + '</span>';
+                html += '<button class="del-btn" data-action="delete" data-id="' + task.id + '"><i class="fas fa-trash"></i> حذف</button>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
+            container.querySelectorAll('[data-action]').forEach(function (el) {
+                el.addEventListener('click', function () {
+                    var id = parseInt(el.getAttribute('data-id'), 10);
+                    if (el.getAttribute('data-action') === 'toggle') toggleTask(id);
+                    else deleteTask(id);
+                });
+            });
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, function (m) {
+                return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m];
+            });
+        }
+
+        document.getElementById('addBtn').addEventListener('click', addNewTask);
+        document.getElementById('taskInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') addNewTask();
+        });
+        document.getElementById('backBtn').addEventListener('click', function () {
+            window.location.href = 'main.html';
+        });
+        // ====== Modal مخصّص لاختيار مدة التركيز (نفس آلية الواجهة الرئيسية) ======
+        function person3PromptFocus(onPicked) {
+            var bodyHtml =
+                '<div class="preset-durations">' +
+                    '<button type="button" class="preset-btn" data-min="15">15 دقيقة</button>' +
+                    '<button type="button" class="preset-btn" data-min="25">25 دقيقة</button>' +
+                    '<button type="button" class="preset-btn" data-min="45">45 دقيقة</button>' +
+                    '<button type="button" class="preset-btn" data-min="60">60 دقيقة</button>' +
+                '</div>' +
+                '<div class="custom-duration">' +
+                    '<label for="p3FocusMin" class="custom-duration-label">' +
+                        '<i class="fas fa-pen-to-square"></i> أو أدخل مدة مخصّصة:' +
+                    '</label>' +
+                    '<div class="custom-duration-row">' +
+                        '<input type="number" id="p3FocusMin" min="1" max="480" step="1" placeholder="دقائق مخصصة" inputmode="numeric">' +
+                        '<button type="button" id="p3StartBtn" class="custom-start-btn">' +
+                            '<i class="fas fa-play"></i> ابدأ' +
+                        '</button>' +
+                    '</div>' +
+                '</div>';
+            MinhajModal.show({
+                type: 'info',
+                title: '🎯 وضع التركيز',
+                message: 'اختر مدة جاهزة أو أدخل عدد دقائق مخصّص:<br><br>' + bodyHtml,
+                confirmText: 'إغلاق'
+            });
+            setTimeout(function () {
+                var presetBtns = document.querySelectorAll('.preset-durations .preset-btn');
+                presetBtns.forEach(function (b) {
+                    b.addEventListener('click', function () {
+                        var m = parseInt(b.getAttribute('data-min'), 10);
+                        if (m > 0) { MinhajModal.hide(); onPicked(m); }
+                    });
+                });
+                var startBtn = document.getElementById('p3StartBtn');
+                var inp = document.getElementById('p3FocusMin');
+                if (startBtn && inp) {
+                    var go = function () {
+                        var v = parseInt(inp.value, 10);
+                        if (!v || v < 1) {
+                            showMinhajAlert('الرجاء إدخال مدة صحيحة.', 'warning', 'خطأ');
+                            return;
+                        }
+                        if (v > 480) {
+                            showMinhajAlert('الحد الأقصى لمدة التركيز هو 480 دقيقة (8 ساعات).', 'warning', 'خطأ');
+                            return;
+                        }
+                        MinhajModal.hide();
+                        onPicked(v);
+                    };
+                    startBtn.addEventListener('click', go);
+                    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); go(); } });
+                    inp.focus();
+                }
+            }, 60);
+        }
+
+        document.getElementById('focusBtn').addEventListener('click', function () {
+            var on = Storage.load('focusMode', false);
+            if (!on) {
+                person3PromptFocus(function (minutes) {
+                    triggerFocusMode(true, minutes);
+                    showMinhajAlert('تم تفعيل وضع التركيز لمدة ' + minutes + ' دقيقة. بالتوفيق.', 'success', '🎯 وضع التركيز');
+                });
+            } else {
+                triggerFocusMode(false, 0);
+                showMinhajAlert('تم إيقاف وضع التركيز.', 'info', 'وضع التركيز');
+            }
+        });
+
+        loadTasks();
+        updateFocusBanner();
+        setInterval(updateFocusBanner, 30000);
+    </script>
+</body>
+</html>

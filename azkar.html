@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أذكار الصباح والمساء - منصة منهاج</title>
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#fbbf24">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="منهاج">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0a0f1e 0%, #0c1222 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            direction: rtl;
+            text-align: right;
+        }
+        body::before {
+            content: ""; position: fixed; inset: 0;
+            background-image: radial-gradient(rgba(251,191,36,0.06) 1px, transparent 1px);
+            background-size: 40px 40px; pointer-events: none;
+        }
+        .container {
+            max-width: 900px; margin: 0 auto; position: relative; z-index: 1;
+        }
+        .header {
+            text-align: center; padding: 1.5rem 1rem 2rem;
+        }
+        .header h1 {
+            font-size: 2rem; color: #fbbf24; margin-bottom: 0.5rem;
+        }
+        .header p { color: #94a3b8; font-size: 1rem; }
+        .tabs {
+            display: flex; gap: 10px; justify-content: center; margin: 0 auto 1.5rem;
+            background: rgba(17,24,39,0.6); padding: 8px; border-radius: 18px;
+            max-width: 420px;
+            border: 1px solid rgba(251,191,36,0.15);
+        }
+        .tab-btn {
+            flex: 1; padding: 12px 14px; border-radius: 12px; border: 0;
+            background: transparent; color: #cbd5e1; cursor: pointer; font-family: inherit;
+            font-weight: 600; font-size: 0.95rem; transition: 0.25s;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #0a0f1e;
+            box-shadow: 0 6px 16px rgba(251,191,36,0.3);
+        }
+        .zikr-card {
+            background: rgba(17,24,39,0.7); backdrop-filter: blur(10px);
+            border: 1px solid rgba(251,191,36,0.18); border-radius: 22px;
+            padding: 1.4rem 1.5rem; margin-bottom: 1.2rem; position: relative;
+            transition: 0.3s;
+        }
+        .zikr-card:hover { border-color: rgba(251,191,36,0.4); }
+        .zikr-card.done {
+            border-color: rgba(34,197,94,0.45);
+            background: rgba(20,40,30,0.55);
+        }
+        .zikr-text {
+            font-family: 'Amiri Quran', 'Cairo', serif;
+            font-size: 1.35rem; line-height: 2.2; color: #fde68a;
+            text-align: center; margin-bottom: 14px;
+        }
+        .zikr-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            color: #94a3b8; font-size: 0.85rem; gap: 10px; flex-wrap: wrap;
+        }
+        .zikr-counter {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.3);
+            border-radius: 14px; padding: 6px 12px; cursor: pointer; user-select: none;
+            transition: 0.2s; color: #fbbf24; font-weight: 700;
+        }
+        .zikr-counter:hover { background: rgba(251,191,36,0.22); transform: translateY(-1px); }
+        .zikr-counter.done { background: rgba(34,197,94,0.18); border-color: rgba(34,197,94,0.5); color: #86efac; }
+        .zikr-virtue {
+            display: block; margin-top: 12px; padding: 10px 14px;
+            background: rgba(251,191,36,0.06); border-right: 3px solid #fbbf24;
+            border-radius: 10px; color: #cbd5e1; font-size: 0.85rem; line-height: 1.7;
+        }
+        .progress-bar-shell {
+            background: rgba(255,255,255,0.06); height: 8px; border-radius: 999px;
+            overflow: hidden; margin: 14px 0;
+        }
+        .progress-bar-fill {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            height: 100%; width: 0%; transition: width 0.4s;
+        }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px;
+            background: rgba(251,191,36,0.12); color: #fbbf24; border-radius: 14px;
+            text-decoration: none; font-weight: 600; margin-bottom: 16px;
+            border: 1px solid rgba(251,191,36,0.3); cursor: pointer; font-family: inherit;
+        }
+        .back-btn:hover { background: rgba(251,191,36,0.2); }
+        .reset-btn {
+            background: rgba(239,68,68,0.12); color: #fca5a5;
+            border: 1px solid rgba(239,68,68,0.3); padding: 10px 16px;
+            border-radius: 12px; cursor: pointer; font-family: inherit; font-weight: 600;
+            margin-top: 8px;
+        }
+        .day-time-banner {
+            text-align: center; padding: 12px; margin-bottom: 1.2rem;
+            background: rgba(251,191,36,0.08); border-radius: 14px;
+            color: #fde68a; font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-btn" onclick="window.location.href='main.html'">
+            <i class="fas fa-arrow-right"></i> العودة للرئيسية
+        </button>
+
+        <div class="header">
+            <h1><i class="fas fa-praying-hands"></i> أذكار الصباح والمساء</h1>
+            <p>حصن المسلم — قرّاءها بقلب حاضر تكن في حفظ الله طوال يومك</p>
+        </div>
+
+        <div id="dayTimeBanner" class="day-time-banner"></div>
+
+        <div class="tabs">
+            <button class="tab-btn" id="tabMorning"><i class="fas fa-sun"></i> أذكار الصباح</button>
+            <button class="tab-btn" id="tabEvening"><i class="fas fa-moon"></i> أذكار المساء</button>
+        </div>
+
+        <div class="progress-bar-shell">
+            <div class="progress-bar-fill" id="azkarProgressBar"></div>
+        </div>
+        <div style="text-align:center;color:#94a3b8;margin-bottom:1rem;font-size:0.9rem;">
+            <span id="azkarProgressText">0/0 ذكر مكتمل</span>
+        </div>
+
+        <div id="azkarList"></div>
+
+        <button class="reset-btn" onclick="resetCounters()">
+            <i class="fas fa-rotate"></i> إعادة تعيين العداد
+        </button>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/pwa-register.js"></script>
+    <script>
+        if (!checkAuth()) {}
+
+        // إن وصلنا من إشعار "موعد : أذكار الصباح/المساء" مع ?tab=morning|evening فاضبط التبويب
+        var __initialTabFromQuery = (function () {
+            try {
+                var qs = new URLSearchParams(window.location.search);
+                var t = qs.get('tab');
+                if (t === 'morning' || t === 'evening') return t;
+            } catch (e) {}
+            return null;
+        })();
+
+        function consumePendingAzkarStart() {
+            try {
+                var pending = Storage.load('pendingAzkarStart', null);
+                if (!pending || !pending.tab) return null;
+                // صلاحية قصيرة لمنع التشغيل المتأخر بالخطأ
+                if (!pending.ts || (Date.now() - pending.ts) > 180000) {
+                    Storage.remove('pendingAzkarStart');
+                    return null;
+                }
+                Storage.remove('pendingAzkarStart');
+                return pending;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function playAzkarSessionAudioOnce(session) {
+            if (!session) return;
+            var doneKey = 'azkarAudioPlayed_' + (session.tab || 'session') + '_' + (session.ts || '0');
+            if (Storage.load(doneKey, false)) return;
+            var audioPath = './audio/athkar_sound.mp3';
+            if (session.audioKey === 'mishary-evening') {
+                audioPath = './audio/mishary_evening.mp3';
+            } else if (session.audioKey === 'mishary-morning') {
+                audioPath = './audio/mishary_morning.mp3';
+            } else if (session.audioKey === 'quran-wird') {
+                audioPath = './audio/quran_wird.mp3';
+            }
+            try {
+                var a = new Audio(audioPath);
+                a.preload = 'auto';
+                a.loop = false;
+                a.currentTime = 0;
+                var p = a.play();
+                if (p && typeof p.catch === 'function') {
+                    p.catch(function () {
+                        // fallback آمن عند غياب ملف مخصص أو منع autoplay
+                        var fallback = new Audio('./audio/athkar_sound.mp3');
+                        fallback.loop = false;
+                        fallback.play().catch(function () {});
+                    });
+                }
+                Storage.save(doneKey, true);
+            } catch (e) {}
+        }
+
+        var azkarData = {
+            morning: [
+                { id: 'm1', text: 'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ. اللَّهُ لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ، لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ، لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ، مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ، يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ، وَلاَ يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلاَّ بِمَا شَاءَ، وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ، وَلاَ يَئُودُهُ حِفْظُهُمَا، وَهُوَ الْعَلِيُّ الْعَظِيمُ', count: 1, virtue: 'من قالها حين يصبح أُجير من الجن حتى يمسي. (آية الكرسي)' },
+                { id: 'm2', text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴿قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ﴾', count: 3, virtue: 'تعدل ثلث القرآن.' },
+                { id: 'm3', text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴿قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ﴾ ... و ﴿قُلْ أَعُوذُ بِرَبِّ النَّاسِ﴾', count: 3, virtue: 'تكفيك من كل شيء (المعوذتان).' },
+                { id: 'm4', text: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ', count: 1, virtue: 'دعاء جامع لخيري الدنيا والآخرة.' },
+                { id: 'm5', text: 'اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ', count: 1, virtue: 'إقرار بفضل الله ومُلكه.' },
+                { id: 'm6', text: 'اللَّهُمَّ أَنْتَ رَبِّي لاَ إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ', count: 1, virtue: 'سيد الاستغفار، من قالها موقناً ومات من يومه دخل الجنة.' },
+                { id: 'm7', text: 'اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلاَئِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لاَ إِلَهَ إِلاَّ أَنْتَ وَحْدَكَ لاَ شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ', count: 4, virtue: 'من قالها أربع مرات أعتقه الله من النار.' },
+                { id: 'm8', text: 'اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ، فَمِنْكَ وَحْدَكَ لاَ شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ', count: 1, virtue: 'من قالها أدى شكر يومه.' },
+                { id: 'm9', text: 'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لاَ إِلَهَ إِلاَّ أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لاَ إِلَهَ إِلاَّ أَنْتَ', count: 3, virtue: 'دعاء العافية في البدن والدين.' },
+                { id: 'm10', text: 'حَسْبِيَ اللَّهُ لاَ إِلَهَ إِلاَّ هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ', count: 7, virtue: 'كفاه الله ما أهمه من أمر الدنيا والآخرة.' },
+                { id: 'm11', text: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي', count: 1, virtue: 'دعاء جامع للعافية والستر.' },
+                { id: 'm12', text: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ', count: 100, virtue: 'حُطَّتْ خطاياه وإن كانت مثل زبد البحر.' },
+                { id: 'm13', text: 'لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', count: 10, virtue: 'كانت له عدل عشر رقاب وحفظ من الشيطان.' },
+                { id: 'm14', text: 'اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ', count: 10, virtue: 'من صلى عليه عشراً صباحاً وعشراً مساءً أدركته شفاعته.' }
+            ],
+            evening: [
+                { id: 'e1', text: 'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ. اللَّهُ لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ ... (آية الكرسي كاملة)', count: 1, virtue: 'من قالها حين يمسي أُجير من الجن حتى يصبح.' },
+                { id: 'e2', text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴿قُلْ هُوَ اللَّهُ أَحَدٌ﴾', count: 3, virtue: 'تعدل ثلث القرآن.' },
+                { id: 'e3', text: 'المعوذتان (الفلق والناس)', count: 3, virtue: 'تكفيك من كل شيء.' },
+                { id: 'e4', text: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا', count: 1, virtue: 'دعاء حماية لليلة كلها.' },
+                { id: 'e5', text: 'اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ', count: 1, virtue: 'إقرار بمُلك الله الكامل.' },
+                { id: 'e6', text: 'اللَّهُمَّ أَنْتَ رَبِّي لاَ إِلَهَ إِلاَّ أَنْتَ ... (سيد الاستغفار)', count: 1, virtue: 'من قالها موقناً ومات من ليلته دخل الجنة.' },
+                { id: 'e7', text: 'اللَّهُمَّ إِنِّي أَمْسَيْتُ أُشْهِدُكَ ...', count: 4, virtue: 'من قالها أربع مرات أعتقه الله من النار.' },
+                { id: 'e8', text: 'بِسْمِ اللَّهِ الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الأَرْضِ وَلاَ فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ', count: 3, virtue: 'لم يضره شيء حتى يصبح.' },
+                { id: 'e9', text: 'رَضِيتُ بِاللَّهِ رَبًّا، وَبِالإِسْلاَمِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا', count: 3, virtue: 'كان حقاً على الله أن يرضيه يوم القيامة.' },
+                { id: 'e10', text: 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلاَ تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ', count: 1, virtue: 'دعاء يحتاجه كل مسلم.' },
+                { id: 'e11', text: 'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ', count: 3, virtue: 'لم تضره فحمة في تلك الليلة.' },
+                { id: 'e12', text: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ', count: 100, virtue: 'حُطَّتْ خطاياه وإن كانت مثل زبد البحر.' },
+                { id: 'e13', text: 'اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ', count: 10, virtue: 'أدركته شفاعة النبي صلى الله عليه وسلم.' }
+            ]
+        };
+
+        var currentTab = 'morning';
+        var counters = Storage.load('azkarCounters', {});
+        var __pendingSession = consumePendingAzkarStart();
+        var lastResetDate = Storage.load('azkarLastReset', null);
+        var todayStr = new Date().toISOString().split('T')[0];
+        if (lastResetDate !== todayStr) {
+            counters = {};
+            Storage.save('azkarCounters', counters);
+            Storage.save('azkarLastReset', todayStr);
+        }
+
+        // اختر التبويب تلقائياً حسب وقت اليوم (DST تلقائي عبر Date)
+        // أو حسب ?tab=morning|evening لو وصلنا من إشعار
+        var hour = new Date().getHours();
+        currentTab = (__pendingSession && __pendingSession.tab) || __initialTabFromQuery || ((hour >= 5 && hour < 16) ? 'morning' : 'evening');
+        document.getElementById('dayTimeBanner').innerHTML =
+            (currentTab === 'morning')
+                ? '<i class="fas fa-sun"></i> اخترنا لك أذكار الصباح بناءً على وقت جهازك (يدعم التوقيت الصيفي والشتوي تلقائياً)'
+                : '<i class="fas fa-moon"></i> اخترنا لك أذكار المساء بناءً على وقت جهازك (يدعم التوقيت الصيفي والشتوي تلقائياً)';
+
+        function render() {
+            var list = azkarData[currentTab];
+            var container = document.getElementById('azkarList');
+            var html = '';
+            var done = 0;
+            for (var i = 0; i < list.length; i++) {
+                var z = list[i];
+                var c = counters[z.id] || 0;
+                var isDone = c >= z.count;
+                if (isDone) done++;
+                html += '<div class="zikr-card ' + (isDone ? 'done' : '') + '">';
+                html += '<div class="zikr-text">' + z.text + '</div>';
+                html += '<div class="zikr-meta">';
+                html += '<div class="zikr-counter ' + (isDone ? 'done' : '') + '" data-id="' + z.id + '" data-target="' + z.count + '">';
+                html += '<i class="fas ' + (isDone ? 'fa-check' : 'fa-hand-pointer') + '"></i> ';
+                html += '<span>' + Math.min(c, z.count) + '/' + z.count + '</span>';
+                html += '</div>';
+                if (z.virtue) html += '<small class="zikr-virtue"><i class="fas fa-star"></i> ' + z.virtue + '</small>';
+                html += '</div></div>';
+            }
+            container.innerHTML = html;
+
+            var pct = Math.round((done / list.length) * 100);
+            document.getElementById('azkarProgressBar').style.width = pct + '%';
+            document.getElementById('azkarProgressText').innerText = done + '/' + list.length + ' ذكر مكتمل (' + pct + '%)';
+
+            container.querySelectorAll('.zikr-counter').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var id = btn.getAttribute('data-id');
+                    var target = parseInt(btn.getAttribute('data-target'), 10);
+                    counters[id] = (counters[id] || 0) + 1;
+                    if (counters[id] > target) counters[id] = target;
+                    Storage.save('azkarCounters', counters);
+
+                    if (counters[id] >= target) {
+                        // تذكير للمهام الإجبارية بأن الأذكار تمت إن أكمل ٧٠٪
+                        markAzkarIfMostlyDone();
+                    }
+                    render();
+                });
+            });
+        }
+
+        function markAzkarIfMostlyDone() {
+            var list = azkarData[currentTab];
+            var done = 0;
+            for (var i = 0; i < list.length; i++) {
+                if ((counters[list[i].id] || 0) >= list[i].count) done++;
+            }
+            if (done / list.length >= 0.7) {
+                var tasks = Storage.load('mandatoryTasks', null);
+                if (tasks && tasks.azkar) {
+                    var key = currentTab === 'morning' ? 'morning' : 'evening';
+                    for (var j = 0; j < tasks.azkar.length; j++) {
+                        if (tasks.azkar[j].id === key) {
+                            tasks.azkar[j].completed = true;
+                            Storage.save('mandatoryTasks', tasks);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        function resetCounters() {
+            var label = currentTab === 'morning' ? 'أذكار الصباح' : 'أذكار المساء';
+            var doReset = function () {
+                var list = azkarData[currentTab];
+                for (var i = 0; i < list.length; i++) {
+                    counters[list[i].id] = 0;
+                }
+                Storage.save('azkarCounters', counters);
+                render();
+            };
+            if (typeof showMinhajConfirm === 'function') {
+                showMinhajConfirm('هل تريد إعادة تعيين عدّاد ' + label + '؟', doReset, null, 'إعادة التعيين');
+            } else {
+                doReset();
+            }
+        }
+
+        document.getElementById('tabMorning').addEventListener('click', function () {
+            currentTab = 'morning';
+            updateTabsUI();
+            render();
+        });
+        document.getElementById('tabEvening').addEventListener('click', function () {
+            currentTab = 'evening';
+            updateTabsUI();
+            render();
+        });
+        function updateTabsUI() {
+            document.getElementById('tabMorning').classList.toggle('active', currentTab === 'morning');
+            document.getElementById('tabEvening').classList.toggle('active', currentTab === 'evening');
+        }
+        updateTabsUI();
+        render();
+        playAzkarSessionAudioOnce(__pendingSession);
+    </script>
+</body>
+</html>
